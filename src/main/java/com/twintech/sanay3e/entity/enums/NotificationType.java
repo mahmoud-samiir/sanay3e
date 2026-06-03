@@ -1,0 +1,14 @@
+package com.twintech.sanay3e.entity.enums;
+
+public enum NotificationType {
+    ORDER_ACCEPTED,
+    ORDER_REJECTED,
+    ORDER_ON_THE_WAY,
+    ORDER_COMPLETED,
+    ORDER_CANCELLED,
+    REVIEW_RECEIVED,
+    SUBSCRIPTION_EXPIRING,
+    SUBSCRIPTION_RENEWED,
+    COUPON_AVAILABLE,
+    GENERAL
+}
