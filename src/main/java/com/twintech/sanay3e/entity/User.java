@@ -1,5 +1,7 @@
 package com.twintech.sanay3e.entity;
 
+import com.twintech.sanay3e.entity.enums.UserStatus;
+import com.twintech.sanay3e.entity.enums.UserType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
@@ -69,9 +71,6 @@ public class User {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Notification> notifications;
-
-    public enum UserType { CLIENT, PROVIDER, ADMIN }
-    public enum UserStatus { ACTIVE, SUSPENDED, DELETED }
 
 
 }
