@@ -9,9 +9,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginRequest {
+
     @NotBlank(message = "Phone is required")
     @Schema(description = "User's registered email or phone number", example = "+20100000000", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String phone;
+    private String identifier;
 
     @NotBlank(message = "Password is required")
     @Schema(description = "User's account password", example = "StrongP@ss123",

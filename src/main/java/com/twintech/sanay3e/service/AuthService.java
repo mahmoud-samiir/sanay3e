@@ -55,7 +55,7 @@ public class AuthService {
 
         // 4. Generate token
         UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getPhone());
-        String token = jwtUtil.generateToken(userDetails);
+        String token = jwtUtil.generateToken(userDetails, savedUser.getId());
 
         log.info("User registered successfully with phone: {} ", savedUser.getPhone());
 
@@ -64,21 +64,19 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        log.info("Attempting login for username: {}", request.getPhone());
+        log.info("Attempting login for identifier: {}", request.getIdentifier());
         // 1. Authenticate user
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getPhone(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getIdentifier(), request.getPassword())
         );
 
-        // 2. Load user and details (phone from authentication principal is the phone)
-        String phone = authentication.getName();
-        User user = userRepository.findByPhone(phone)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with phone: " + phone));
+        User user = userRepository.findByPhoneOrEmail(request.getIdentifier(), request.getIdentifier())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with: " + request.getIdentifier()));
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(phone);
-        String token = jwtUtil.generateToken(userDetails);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(request.getIdentifier());
+        String token = jwtUtil.generateToken(userDetails, user.getId());
 
-        log.info("User {} logged in successfully", phone);
+        log.info("User {} logged in successfully", user.getPhone());
 
         // 3. Map to AuthResponse using Mapper
         return authMapper.toAuthResponse(user, token);

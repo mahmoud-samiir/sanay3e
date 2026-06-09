@@ -21,10 +21,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String phone) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
         // Try finding user by phone number
-        User user = userRepository.findByPhone(phone)
-                        .orElseThrow(() -> new UsernameNotFoundException("User not found with phone: " + phone));
+        User user = userRepository.findByPhoneOrEmail(identifier, identifier)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         boolean enabled = user.getStatus() == UserStatus.ACTIVE;
         boolean accountNonLocked = user.getStatus() != UserStatus.SUSPENDED;
