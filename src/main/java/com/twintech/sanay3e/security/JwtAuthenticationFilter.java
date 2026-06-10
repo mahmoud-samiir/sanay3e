@@ -1,7 +1,9 @@
 package com.twintech.sanay3e.security;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import io.jsonwebtoken.JwtException;
@@ -57,15 +59,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         .map(GrantedAuthority.class::cast)
                         .toList();
 
-                UserDetails userDetails = User.builder()
-                        .username(phone)
-                        .password("")
-                        .authorities(authorities)
-                        .build();
+                // ✅ بقى Map عشان SecurityUtil يقدر يقرأ الـ userId
+                Map<String, Object> claims = new HashMap<>();
+                claims.put("userId", jwtUtil.extractUserId(jwt));
+                claims.put("phone", phone);
 
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(
-                                userDetails,
+                                claims,   // 👈 principal
                                 null,
                                 authorities
                         );
@@ -75,12 +76,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                 .buildDetails(request)
                 );
 
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authToken);
+                SecurityContextHolder.getContext().setAuthentication(authToken);
             }
 
         } catch (JwtException ignored) {
-            // Invalid JWT
+            System.out.println("JWT DEBUG: Token is invalid or expired! (Caught JwtException)");
         }
 
         filterChain.doFilter(request, response);

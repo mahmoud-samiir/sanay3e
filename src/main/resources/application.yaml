@@ -30,3 +30,9 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
   expiration: ${JWT_EXPIRATION}
+
+springdoc:
+  swagger-ui:
+    persistAuthorization: true
+  api-docs:
+    path: /v3/api-docs

@@ -1,8 +1,10 @@
 package com.twintech.sanay3e.service;
 
 import com.twintech.sanay3e.dto.auth.RegisterRequest;
+import com.twintech.sanay3e.entity.enums.UserStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,6 +21,7 @@ import com.twintech.sanay3e.entity.User;
 import com.twintech.sanay3e.mapper.AuthMapper;
 import com.twintech.sanay3e.security.CustomUserDetailsService;
 import com.twintech.sanay3e.security.JwtUtil;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -72,6 +75,10 @@ public class AuthService {
 
         User user = userRepository.findByPhoneOrEmail(request.getIdentifier(), request.getIdentifier())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with: " + request.getIdentifier()));
+
+        if (user.getStatus()== UserStatus.DELETED) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Your account has been deleted/deactivated.");
+        }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getIdentifier());
         String token = jwtUtil.generateToken(userDetails, user.getId());
